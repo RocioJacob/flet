@@ -1,3 +1,4 @@
+import fpdf
 # Importamos Flet
 import flet as ft
 
@@ -6,7 +7,9 @@ class FormularioApp:
     def __init__(self):
         # Campos de texto para que el usuario ingrese datos
         self.nombre = ft.TextField(label="Nombre", width=300)
+        self.apellido = ft.TextField(label="Apellido", width=300)
         self.correo = ft.TextField(label="Correo", width=300)
+        self.contraseña = ft.TextField(label="Contraseña", width=300, password=True, can_reveal_password=True)
         
         # Texto donde se mostrará el resultado
         self.resultado = ft.Text(value="", size=16)
@@ -14,9 +17,34 @@ class FormularioApp:
     # Función que se ejecuta cuando se presiona el botón "Enviar"
     def enviar_datos(self, e):
         # Tomamos los valores de los campos y los mostramos en self.resultado
-        self.resultado.value = f"Nombre: {self.nombre.value}\nCorreo: {self.correo.value}"
+        self.resultado.value = f"Nombre: {self.nombre.value}\nApellido: {self.apellido.value}\nCorreo: {self.correo.value}\nContraseña: {self.contraseña.value}"
         # Actualizamos la página para que se vea el cambio
         self.page.update()
+ # Función que se ejecuta cuando se presiona el botón "Enviar"
+    def enviar_datos(self, e):
+        self.resultado.value = f"Nombre: {self.nombre.value}\nApellido: {self.apellido.value}\nCorreo: {self.correo.value}\nContraseña: {self.contraseña.value}"
+        self.page.update()
+
+# Función para generar el PDF, ahora como parte de la clase principal
+    def generar_pdf(self, e):
+        # Se verifica si los campos están vacíos para no generar un PDF con datos nulos
+        if not self.nombre.value or not self.apellido.value or not self.correo.value or not self.contraseña.value:
+            self.resultado.value = "Por favor, completa todos los campos antes de generar el PDF."
+            self.page.update()
+            return # Detiene la ejecución si los campos están vacíos
+
+        pdf = fpdf.FPDF()
+        pdf.add_page()
+        pdf.set_font("Arial", size=12)
+        pdf.cell(200, 10, txt="Datos del Formulario", ln=True, align='C')
+        pdf.cell(200, 10, txt=f"Nombre: {self.nombre.value}", ln=True)
+        pdf.cell(200, 10, txt=f"Apellido: {self.apellido.value}", ln=True)
+        pdf.cell(200, 10, txt=f"Correo: {self.correo.value}", ln=True)
+        pdf.cell(200, 10, txt=f"Contraseña: {self.contraseña.value}", ln=True)
+        pdf.output("datos_formulario.pdf")
+        self.resultado.value = "PDF generado con éxito: datos_formulario.pdf"
+        self.page.update()
+
 
     # Función principal que crea la interfaz
     def main(self, page: ft.Page):
@@ -26,21 +54,27 @@ class FormularioApp:
         self.page.vertical_alignment = ft.MainAxisAlignment.CENTER
 
         # Botón que ejecuta enviar_datos cuando se hace clic
-        boton = ft.ElevatedButton(text="Enviar", on_click=self.enviar_datos)
+        boton_enviar = ft.ElevatedButton(text="Enviar", on_click=self.enviar_datos)
+        #boton para generar PDF
+        boton_pdf = ft.ElevatedButton(text="Generar PDF", on_click=self.generar_pdf)
 
         # Agregamos todos los elementos a la página en una columna
         self.page.add(
             ft.Column(
                 controls=[
                     self.nombre,
+                    self.apellido,
                     self.correo,
-                    boton,
+                    self.contraseña,
+                    boton_enviar,
+                    boton_pdf,
                     self.resultado
                 ],
                 alignment=ft.MainAxisAlignment.CENTER,
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER
             )
         )
+
 
 # Arrancamos la aplicación en el navegador
 if __name__ == "__main__":
