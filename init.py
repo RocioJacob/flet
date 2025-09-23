@@ -1,6 +1,21 @@
 import fpdf
 # Importamos Flet
 import flet as ft
+# Subclase de FPDF para personalizar encabezado y pie de página
+class PDF(fpdf.FPDF):
+    def header(self):
+        # Agregar imagen (x=10, y=8, ancho=30)
+        self.image("RJ.png", 10, 8, 30)
+        self.set_font("Arial", "B", 12)
+        # Título centrado
+        self.cell(0, 10, "Datos del Formulario", border=0, ln=True, align="C")
+        self.ln(10)  # Salto de línea debajo del encabezado
+
+    def footer(self):
+        # Posición a 1.5 cm del final
+        self.set_y(-15)
+        self.set_font("Arial", "I", 10)
+        self.cell(0, 10, "Autor: Rocio Jacob", 0, 0, "C")
 
 # Creamos una clase para el formulario
 class FormularioApp:
@@ -17,7 +32,12 @@ class FormularioApp:
     # Función que se ejecuta cuando se presiona el botón "Enviar"
     def enviar_datos(self, e):
         # Tomamos los valores de los campos y los mostramos en self.resultado
-        self.resultado.value = f"Nombre: {self.nombre.value}\nApellido: {self.apellido.value}\nCorreo: {self.correo.value}\nContraseña: {self.contraseña.value}"
+        self.resultado.value = (
+            f"Nombre: {self.nombre.value}\n"
+            f"Apellido: {self.apellido.value}\n"
+            f"Correo: {self.correo.value}\n"
+            f"Contraseña: {self.contraseña.value}"
+        )
         # Actualizamos la página para que se vea el cambio
         self.page.update()
  # Función que se ejecuta cuando se presiona el botón "Enviar"
@@ -33,14 +53,17 @@ class FormularioApp:
             self.page.update()
             return # Detiene la ejecución si los campos están vacíos
 
-        pdf = fpdf.FPDF()
-        pdf.add_page()
-        pdf.set_font("Arial", size=12)
-        pdf.cell(200, 10, txt="Datos del Formulario", ln=True, align='C')
+        pdf = PDF()                             # Usamos la subclase personalizada
+        pdf.add_page()                          # Agregamos una página
+        pdf.set_font("Arial", size=12)          # Fuente y tamaño
+
+        # Agregamos los datos del formulario al PDF
         pdf.cell(200, 10, txt=f"Nombre: {self.nombre.value}", ln=True)
         pdf.cell(200, 10, txt=f"Apellido: {self.apellido.value}", ln=True)
         pdf.cell(200, 10, txt=f"Correo: {self.correo.value}", ln=True)
         pdf.cell(200, 10, txt=f"Contraseña: {self.contraseña.value}", ln=True)
+
+        # Guardamos el PDF
         pdf.output("datos_formulario.pdf")
         self.resultado.value = "PDF generado con éxito: datos_formulario.pdf"
         self.page.update()
@@ -48,9 +71,9 @@ class FormularioApp:
 
     # Función principal que crea la interfaz
     def main(self, page: ft.Page):
-        self.page = page  # Guardamos la referencia a la página
+        self.page = page                            # Guardamos la referencia a la página
         self.page.title = "Formulario Básico con Flet"
-        self.page.bgcolor = "white"  # Fondo blanco
+        self.page.bgcolor = "white"                 # Fondo blanco
         self.page.vertical_alignment = ft.MainAxisAlignment.CENTER
 
         # Botón que ejecuta enviar_datos cuando se hace clic
