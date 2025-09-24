@@ -5,7 +5,7 @@ import flet as ft
 class PDF(fpdf.FPDF):
     def header(self):
         # Agregar imagen (x=10, y=8, ancho=30)
-        self.image("RJ.png", 10, 8, 30)
+        self.image("assets/RJ.png", 10, 8, 30)
         self.set_font("Arial", "B", 12)
         # Título centrado
         self.cell(0, 10, "Datos del Formulario", border=0, ln=True, align="C")
@@ -21,11 +21,11 @@ class PDF(fpdf.FPDF):
 class FormularioApp:
     def __init__(self):
         # Campos de texto para que el usuario ingrese datos
-        self.nombre = ft.TextField(label="Nombre", width=300)
-        self.apellido = ft.TextField(label="Apellido", width=300)
-        self.correo = ft.TextField(label="Correo", width=300)
-        self.contraseña = ft.TextField(label="Contraseña", width=300, password=True, can_reveal_password=True)
-        
+        self.nombre = ft.TextField(label="Nombre", border_color="orange", width=300)
+        self.apellido = ft.TextField(label="Apellido", border_color="orange", width=300)
+        self.correo = ft.TextField(label="Correo", border_color="orange", width=300)
+        self.contraseña = ft.TextField(label="Contraseña", border_color="orange", width=300, password=True, can_reveal_password=True)
+
         # Texto donde se mostrará el resultado
         self.resultado = ft.Text(value="", size=16)
 
@@ -75,16 +75,18 @@ class FormularioApp:
         self.page.title = "Formulario Básico con Flet"
         self.page.bgcolor = "white"                 # Fondo blanco
         self.page.vertical_alignment = ft.MainAxisAlignment.CENTER
+        self.page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
 
         # Botón que ejecuta enviar_datos cuando se hace clic
-        boton_enviar = ft.ElevatedButton(text="Enviar", on_click=self.enviar_datos)
+        boton_enviar = ft.ElevatedButton(text="Enviar", bgcolor="orange", color="white", on_click=self.enviar_datos)
         #boton para generar PDF
-        boton_pdf = ft.ElevatedButton(text="Generar PDF", on_click=self.generar_pdf)
+        boton_pdf = ft.ElevatedButton(text="Generar PDF", bgcolor="orange", color="white", on_click=self.generar_pdf)
 
         # Agregamos todos los elementos a la página en una columna
         self.page.add(
             ft.Column(
                 controls=[
+                    ft.Image(src="/logo.png", width=300, height=300), #agregamos una imagen de logo
                     self.nombre,
                     self.apellido,
                     self.correo,
@@ -102,4 +104,4 @@ class FormularioApp:
 # Arrancamos la aplicación en el navegador
 if __name__ == "__main__":
     app = FormularioApp()
-    ft.app(target=app.main, view=ft.WEB_BROWSER)
+    ft.app(target=app.main, view=ft.WEB_BROWSER, assets_dir="assets")
