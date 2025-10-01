@@ -15,7 +15,7 @@ class PDF(fpdf.FPDF):
         # Posición a 1.5 cm del final
         self.set_y(-15)
         self.set_font("Arial", "I", 10)
-        self.cell(0, 10, "Autor: Rocio Jacob", 0, 0, "C")
+        self.cell(0, 10, "Autores: Rocio Jacob y Erika Muñoz", 0, 0, "C")
 
 # Creamos una clase para el formulario
 class FormularioApp:
